@@ -1,20 +1,18 @@
-# from rest_framework import viewsets
-# from .models import Usuario
-# from .serializers import UsuarioSerializer
-
-# class UsuarioViewSet(viewsets.ModelViewSet):
-#     queryset = Usuario.objects.all()
-#     serializer_class = UsuarioSerializer
-
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from .models import Usuario
 from .serializers import UsuarioSerializer
 from django.contrib.auth.models import User
+from rest_framework.authentication import TokenAuthentication
+from rest_framework import permissions
+from api.permissions import CustomDjangoModelPermissions
+
 
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
+    permission_classes = [permissions.DjangoModelPermissions, CustomDjangoModelPermissions, ]
+    authentication_classes = [TokenAuthentication]
 
     def create(self, request, *args, **kwargs):
         # Extraer datos del usuario del cuerpo de la solicitud
