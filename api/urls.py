@@ -18,10 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from rest_framework import routers
 from django.urls import include, path, re_path
-# from rest_framework.authtoken.views import ObtainAuthToken
 from .views import CustomObtainAuthToken
-#prueba jwt
-from .views import CustomObtainTokenPairView
 
 from usuarios import views as user_views
 from rol import views as rol_views
@@ -35,5 +32,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     # path('login/', ObtainAuthToken.as_view(), name='login'),
-    path('login/', CustomObtainTokenPairView.as_view(), name='login'),
+    path('login/', CustomObtainAuthToken.as_view()),
 ]
