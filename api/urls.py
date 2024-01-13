@@ -25,6 +25,9 @@ from rol import views as rol_views
 from carrera import views as carrera_views
 from modulo import views as modulo_views
 from materia import views as materia_views
+from alumno import views as alumno_views
+from asistencia import views as asistencia_views
+
 
 
 router = routers.DefaultRouter()
@@ -33,6 +36,9 @@ router.register(r'rol', rol_views.RolViewSet)
 router.register(r'carrera', carrera_views.CarreraViewSet)
 router.register(r'modulo', modulo_views.ModuloViewSet)
 router.register(r'materia', materia_views.MateriaViewSet)
+router.register(r'alumno', alumno_views.AlumnoViewSet)
+router.register(r'asistencia', asistencia_views.AsistenciaViewSet)
+
 
 
 

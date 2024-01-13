@@ -50,6 +50,9 @@ INSTALLED_APPS = [
     'carrera',
     'materia',
     'modulo',
+    'alumno',
+    'asistencia',
+    'estado_asistencia',
 ]
 
 MIDDLEWARE = [
