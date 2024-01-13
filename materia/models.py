@@ -1,18 +1,30 @@
 from django.db import models
+from carrera.models import Carrera
+from modulo.models import Modulo
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from simple_history.models import HistoricalRecords
 
-class Carrera(models.Model):
+class Materia(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.CharField(max_length=400)
-    habilitado = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
+    anual = models.BooleanField(default=True)
+    
+    carrera = models.ForeignKey(Carrera,
+                            on_delete=models.CASCADE,
+                            null=False,
+                            blank=False)
+    
+    modulos = models.ManyToManyField(Modulo)
+
+    habilitado = models.BooleanField(default=True)  
+    created_at = models.DateTimeField(auto_now_add=True)
     changed_by = models.ForeignKey(User,
                                    blank=True,
                                    null=True,
                                    on_delete=models.CASCADE)
+    
     history = HistoricalRecords()
     class Meta:
         ordering = ['id']

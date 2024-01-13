@@ -1,21 +1,21 @@
-from .models import Carrera
+from .models import Modulo
 from rest_framework import viewsets
 from rest_framework import permissions
-from .serializers import CarreraSerializer
+from .serializers import ModuloSerializer
 from rest_framework.authentication import TokenAuthentication
 from api.permissions import CustomDjangoModelPermissions 
 from rest_framework.permissions import IsAuthenticated
 from api.permissions import IsAdminOrReadOnly
 from rest_framework.response import Response
 
-class CarreraViewSet(viewsets.ModelViewSet):
-    queryset = Carrera.objects.all()
-    serializer_class = CarreraSerializer()
+class ModuloViewSet(viewsets.ModelViewSet):
+    queryset = Modulo.objects.all()
+    serializer_class = ModuloSerializer
     # permission_classes = [IsAdminOrReadOnly]
     authentication_classes = [TokenAuthentication]
 
     def get_queryset(self):
-        queryset = Carrera.objects.all()
+        queryset = Modulo.objects.all()
         nombre = self.request.query_params.get('nombre')
         descripcion = self.request.query_params.get('descripcion')
         habilitado = self.request.query_params.get('habilitado')

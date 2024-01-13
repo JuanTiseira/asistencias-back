@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'usuarios',
     'rol',
     'carrera',
+    'materia',
+    'modulo',
 ]
 
 MIDDLEWARE = [

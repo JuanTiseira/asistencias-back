@@ -3,9 +3,10 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 from simple_history.models import HistoricalRecords
 
-class Carrera(models.Model):
+class Modulo(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.CharField(max_length=400)
+    
     habilitado = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

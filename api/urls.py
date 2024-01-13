@@ -22,15 +22,22 @@ from .views import CustomObtainAuthToken
 
 from usuarios import views as user_views
 from rol import views as rol_views
+from carrera import views as carrera_views
+from modulo import views as modulo_views
+from materia import views as materia_views
+
 
 router = routers.DefaultRouter()
 router.register(r'usuarios', user_views.UsuarioViewSet)
 router.register(r'rol', rol_views.RolViewSet)
+router.register(r'carrera', carrera_views.CarreraViewSet)
+router.register(r'modulo', modulo_views.ModuloViewSet)
+router.register(r'materia', materia_views.MateriaViewSet)
+
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    # path('login/', ObtainAuthToken.as_view(), name='login'),
     path('login/', CustomObtainAuthToken.as_view()),
 ]
