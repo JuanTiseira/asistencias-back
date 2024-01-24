@@ -13,7 +13,7 @@ class Alumno(models.Model):
     correo = models.CharField(max_length=400)
     direccion = models.CharField(max_length=400)
     telefono = models.CharField(max_length=20)
-    materias = models.ManyToManyField(Materia)
+    materias = models.ManyToManyField(Materia, through='AsistenciaMateria')
     carreras = models.ManyToManyField(Carrera)
     habilitado = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -36,3 +36,9 @@ class Alumno(models.Model):
     @_history_user.setter
     def _history_user(self, value):
         self.changed_by = value
+
+class AsistenciaMateria(models.Model):
+    alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
+    materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
+    estado = models.CharField(max_length=20, choices=[('Regular', 'Regular'), ('Irregular', 'Irregular'), ('Promocionado', 'Promocionado')], default='Regular')
+    asistencias = models.PositiveIntegerField(default=0)
