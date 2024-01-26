@@ -1,7 +1,10 @@
 from rest_framework import serializers
 from .models import Usuario
+from rol.serializers import RolSerializer
+from drf_writable_nested import WritableNestedModelSerializer
 
-class UsuarioSerializer(serializers.ModelSerializer):
+class UsuarioSerializer(WritableNestedModelSerializer, serializers.HyperlinkedModelSerializer):
+    rol = RolSerializer()
     class Meta:
         model = Usuario
-        fields = '__all__'
+        fields = ['id', 'url', 'nombre', 'apellido', 'dni', 'direccion', 'fecha_nacimiento', 'email', 'telefono', 'rol']

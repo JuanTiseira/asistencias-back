@@ -6,7 +6,10 @@ from django.contrib.auth.models import User
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import permissions
 from api.permissions import CustomDjangoModelPermissions
-
+from rol.models import Rol
+from django.shortcuts import get_object_or_404
+from django.db import transaction
+from django.core.exceptions import ValidationError
 
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
@@ -16,22 +19,59 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         # Extraer datos del usuario del cuerpo de la solicitud
-        user_data = {
-            'username': request.data.get('nombre'),  # Ajusta cómo quieres asignar el nombre de usuario
-            'password': request.data.get('password'),  # Ajusta cómo manejas la contraseña
-            'email': request.data.get('email', ''),  # Ajusta según tus necesidades
-        }
-
-        # Crear un nuevo usuario
-        user = User.objects.create_user(**user_data)
-
-        # Agregar el usuario recién creado al cuerpo de la solicitud
-        request.data['user'] = user.id
-
-        # Llamar al método create del serializador para manejar la creación del objeto Usuario
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        if "rol" in request.data:
+            rol_id = request.data['rol']
+            rol = Rol.objects.get(pk=rol_id)
+            request.data['rol'] = rol
         
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        try:
+            with transaction.atomic():
+                user = None
+                if request.data["username"] is not None and request.data["password"] is not None:
+                    if len(request.data["username"]) > 0 and len(request.data["password"]) > 0:
+                        # rol = request.data['rol']
+                        # validate_password(request.data["password"])
+                        user = User.objects.create_user(username=request.data["username"].upper(), password=request.data["password"])
+                        if rol.grupo is not None:
+                            user.groups.add(rol.grupo)
+                            user.save()
+        
+                usuario = Usuario.objects.create(
+                                rol=request.data['rol'], 
+                                nombre=request.data['nombre'].upper(),
+                                apellido=request.data['apellido'].upper(),
+                                telefono=request.data['telefono'])
+                
+               
+                if len(request.data['dni']) > 0:
+                    usuario.dni = request.data['dni']
+                    
+                if len(request.data['direccion']) > 0:
+                    usuario.direccion = request.data['direccion'].upper()
+                    
+                if len(request.data['fecha_nacimiento']) > 0:
+                    usuario.fecha_nacimiento = request.data['fecha_nacimiento']
+                    
+                if len(request.data['email']) > 0:
+                    usuario.email = request.data['email'].upper()
+                    
+                if user is not None:
+                    usuario.user = user
+                    
+                
+                usuario.changed_by = request.user
+                usuario.save()
+                usuario = UsuarioSerializer(usuario, context={'request': request}).data
+                return Response(data={'success': True, 'message': "Usuario creado.", "data" : usuario},
+                            status= status.HTTP_201_CREATED)
+                
+        except ValidationError as ex:
+            return Response(data={'success': False, 'message': "No se pudo crear el usuario, contraseña inválida", 'error': str(ex)},
+                            status= status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            if len(ex.args[0].split("DETAIL: "))>1:
+                error = ex.args[0].split("DETAIL: ")[1]
+            else:
+                error = ex    
+            return Response(data={'success': False, 'message': "No se pudo crear el usuario", 'error': str(error)},
+                            status= status.HTTP_400_BAD_REQUEST)

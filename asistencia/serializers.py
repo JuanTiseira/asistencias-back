@@ -16,3 +16,4 @@ class AsistenciaSerializer(WritableNestedModelSerializer, serializers.Hyperlinke
         fields = [
                     'id', 'url', 'fecha', 'carrera', 'materia', 'alumnos', 'habilitado', 'created_at'
                 ]
+        
