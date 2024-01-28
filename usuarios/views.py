@@ -24,7 +24,8 @@ class UsuarioViewSet(viewsets.ModelViewSet):
         try:
             with transaction.atomic():
                 if "rol" in request.data:
-                    rol_id = request.data['rol']
+                    rol_data = request.data['rol']
+                    rol_id = rol_data["id"]
                     rol = Rol.objects.get(pk=rol_id)
                     request.data['rol'] = rol
 
@@ -41,7 +42,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
                     if len(request.data['nombre']) > 0:
                         usuario.nombre = request.data['nombre']
 
-                    if len(request.data['dni']) > 0:
+                    if (request.data['dni']):
                         usuario.dni = request.data['dni']
                         
                     if len(request.data['direccion']) > 0:
@@ -56,7 +57,8 @@ class UsuarioViewSet(viewsets.ModelViewSet):
                     if len(request.data['telefono']) > 0:
                         usuario.telefono = request.data['telefono']
                     
-                if request.data["username"] is not None and request.data["password"] is not None:
+                if "username" in request.data and request.data["username"] is not None and \
+                        "password" in request.data and request.data["password"] is not None:
                     if len(request.data["username"]) > 0 and len(request.data["password"]) > 0:
                         print(usuario.user.id)
                         user_id = usuario.user.id
