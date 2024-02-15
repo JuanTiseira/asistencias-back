@@ -9,7 +9,7 @@ from simple_history.models import HistoricalRecords
 class Alumno(models.Model):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    dni = models.CharField(max_length=20, unique=True)
+    dni = models.CharField(max_length=20)
     email = models.CharField(max_length=400)
     direccion = models.CharField(max_length=400)
     telefono = models.CharField(max_length=20)

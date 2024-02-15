@@ -10,6 +10,8 @@ from rest_framework.response import Response
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from carrera.models import Carrera
+from rest_framework.decorators import action
+from rol.models import Rol
 
 class AlumnoViewSet(viewsets.ModelViewSet):
     queryset = Alumno.objects.all()
@@ -43,28 +45,90 @@ class AlumnoViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(materias=materia)
         return queryset
 
+    @action(detail=False, methods=['POST'])
+    def edit_alumno(self, request, *args, **kwargs):            
+        try:
+            with transaction.atomic():
+                # if "rol" in request.data:
+                #     rol_data = request.data['rol']
+                #     rol_id = rol_data["id"]
+                #     rol = Rol.objects.get(pk=rol_id)
+                #     request.data['rol'] = rol
 
+                if "id" in request.data:
+                    id = request.data["id"]
+                    alumno = Alumno.objects.get(pk=id)
+                
+                    
+                    if "apellido" in request.data:
+                        alumno.apellido = request.data['apellido']
+
+                    if "nombre" in request.data:
+                        alumno.nombre = request.data['nombre']
+
+                    if "dni" in request.data:
+                        alumno.dni = request.data['dni']
+                        
+                    if "direccion" in request.data:
+                        alumno.direccion = request.data['direccion'].upper()
+                        
+                    if "fecha_nacimiento" in request.data:
+                        alumno.fecha_nacimiento = request.data['fecha_nacimiento']
+                        
+                    if "email" in request.data:
+                        alumno.email = request.data['email'].upper()
+
+                    if "telefono" in request.data:
+                        alumno.telefono = request.data['telefono']
+                    
+                    if 'carreras' in request.data:
+                        carrera = request.data['carreras']
+                        carrerasForset= []
+                        if (len(carrera)):
+                            for i in carrera:
+                                carreras = Carrera.objects.get(pk=i["id"])
+                                carrerasForset.append(carreras)
+                            print(carrerasForset)    
+                            alumno.carreras.set(carrerasForset)
+                        
+                alumno.changed_by = request.user
+                alumno.save()
+                alumno = AlumnoSerializer(alumno, context={'request': request}).data
+                return Response(data={'success': True, 'message': "Alumno editado.", "data" : alumno},
+                            status= status.HTTP_201_CREATED)
+                
+        except ValidationError as ex:
+            return Response(data={'success': False, 'message': "No se pudo editar el alumno, contraseña inválida", 'error': str(ex)},
+                            status= status.HTTP_400_BAD_REQUEST)
+        except Exception as ex:
+            if len(ex.args[0].split("DETAIL: "))>1:
+                error = ex.args[0].split("DETAIL: ")[1]
+            else:
+                error = ex    
+            return Response(data={'success': False, 'message': "No se pudo editar el alumno", 'error': str(error)},
+                            status= status.HTTP_400_BAD_REQUEST)
+        
     def create(self, request, *args, **kwargs):
         # Extraer datos del usuario del cuerpo de la solicitud
         try:
             with transaction.atomic():
                 
-                usuario = Alumno.objects.create( 
+                alumno = Alumno.objects.create( 
                                 nombre=request.data['nombre'].upper(),
                                 apellido=request.data['apellido'].upper(),
                                 telefono=request.data['telefono'])
                 
                 if 'dni' in request.data:
-                    usuario.dni = request.data['dni']
+                    alumno.dni = request.data['dni']
                     
                 if 'direccion' in request.data:
-                    usuario.direccion = request.data['direccion'].upper()
+                    alumno.direccion = request.data['direccion'].upper()
                     
                 if 'fecha_nacimiento' in request.data:
-                    usuario.fecha_nacimiento = request.data['fecha_nacimiento']
+                    alumno.fecha_nacimiento = request.data['fecha_nacimiento']
                     
                 if 'email' in request.data:
-                    usuario.email = request.data['email'].upper()
+                    alumno.email = request.data['email'].upper()
 
                 if 'carreras' in request.data:
                     carrera = request.data['carreras']
@@ -72,12 +136,12 @@ class AlumnoViewSet(viewsets.ModelViewSet):
                         print(i)
                         carreras = Carrera.objects.get(pk=i)
                         print(carreras)
-                        usuario.carreras.add(carreras)
+                        alumno.carreras.add(carreras)
 
-                usuario.changed_by = request.user
-                usuario.save()
-                usuario = AlumnoSerializer(usuario, context={'request': request}).data
-                return Response(data={'success': True, 'message': "Alumno creado.", "data" : usuario},
+                alumno.changed_by = request.user
+                alumno.save()
+                alumno = AlumnoSerializer(alumno, context={'request': request}).data
+                return Response(data={'success': True, 'message': "Alumno creado.", "data" : alumno},
                             status= status.HTTP_201_CREATED)
                 
         except ValidationError as ex:

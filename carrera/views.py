@@ -10,7 +10,7 @@ from rest_framework.response import Response
 
 class CarreraViewSet(viewsets.ModelViewSet):
     queryset = Carrera.objects.all()
-    serializer_class = CarreraSerializer()
+    serializer_class = CarreraSerializer
     # permission_classes = [IsAdminOrReadOnly]
     authentication_classes = [TokenAuthentication]
 
