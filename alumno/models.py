@@ -38,6 +38,11 @@ class Alumno(models.Model):
     def _history_user(self, value):
         self.changed_by = value
 
+    def get_estado(self):
+        # Lógica para obtener el estado del alumno, por ejemplo:
+        estado_asistencia = self.asistenciaalumno_set.first().estado.nombre
+        return estado_asistencia
+    
 class AsistenciaMateria(models.Model):
     alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
     materia = models.ForeignKey(Materia, on_delete=models.CASCADE)

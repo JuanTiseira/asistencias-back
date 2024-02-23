@@ -7,9 +7,10 @@ from drf_writable_nested import WritableNestedModelSerializer
 
 class MateriaSerializer(WritableNestedModelSerializer, serializers.HyperlinkedModelSerializer):
     carrera = CarreraSerializer()
-    modulos = ModuloSerializer()
+    modulos = ModuloSerializer(many=True)
 
     class Meta:
         model = Materia
         fields = ['id', 'url', 'nombre', 'descripcion', 'anual', 'carrera', 'modulos',
                    'habilitado', 'created_at']
+        depth = 1

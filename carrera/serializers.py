@@ -8,3 +8,4 @@ class CarreraSerializer(serializers.ModelSerializer):
     class Meta:
         model = Carrera
         fields = ['id', 'url', 'nombre', 'descripcion', 'habilitado', 'created_at']
+        depth = 1
