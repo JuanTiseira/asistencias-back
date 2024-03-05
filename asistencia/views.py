@@ -92,26 +92,21 @@ class AsistenciaViewSet(viewsets.ModelViewSet):
             fecha = request.data.get('fecha')
             carrera = request.data.get('carrera')
             materia = request.data.get('materia')
-            alumnos_estado_asistencia = request.data.get('alumnos_estado_asistencia')  # Lista de diccionarios con id del alumno y estado de asistencia
-            # print("llegeu", carrera.get("id"), materia.get("id"))
+            alumnos_data = request.data.get('alumnos')
             # Obtener carrera y materia
             carrera = Carrera.objects.get(id=carrera.get("id"))
             materia = Materia.objects.get(id=materia.get("id"))
-            print(carrera.id, materia.id)
             # # Crear la asistencia
-            # asistencia = Asistencia.objects.create(fecha=fecha, carrera=carrera, materia=materia)
+            asistencia = Asistencia.objects.create(fecha=fecha, carrera=carrera, materia=materia)
 
             # # Recorrer la lista de alumnos y sus estados de asistencia
-            # for alumno_estado in alumnos_estado_asistencia:
-            #     alumno_id = alumno_estado.get('alumno_id')
-            #     estado_asistencia_id = alumno_estado.get('estado_asistencia_id')
-
-            #     # Obtener el alumno y el estado de asistencia
-            #     alumno = Alumno.objects.get(id=alumno_id)
-            #     estado_asistencia = EstadoAsistencia.objects.get(id=estado_asistencia_id)
-
+            for alumno_data in alumnos_data:
+                alumno_id = alumno_data.get('id')
+                estado_asistencia = alumno_data.get('estado_asistencia')
+                alumno = Alumno.objects.get(id=alumno_id)
+                estado = EstadoAsistencia.objects.get(nombre=estado_asistencia)
             #     # Crear la relación entre la asistencia y el alumno con su estado de asistencia
-            #     AsistenciaAlumno.objects.create(asistencia=asistencia, alumno=alumno, estado=estado_asistencia)
+                AsistenciaAlumno.objects.create(asistencia=asistencia, alumno=alumno, estado=estado)
 
             return Response(data={'success': True, 'message': "Asistencia registrada correctamente."}, status=status.HTTP_201_CREATED)
 
